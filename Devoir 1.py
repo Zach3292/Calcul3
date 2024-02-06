@@ -27,7 +27,7 @@ def image_contour(N, s):
     # Ajouter du code ici
     C = N > s
 
-    return C
+    return C * 255
 
 def moyenne_image(img, m):
     Im = np.zeros_like(img)
