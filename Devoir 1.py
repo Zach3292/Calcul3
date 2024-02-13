@@ -6,10 +6,10 @@ def gradient_image(img):
     G = np.zeros((img.shape[0], img.shape[1], 2))
 
     # Ajouter du code ici
-    dadx = np.gradient(img, axis = 1)
-    dady = np.gradient(img, axis = 0)
-    G[:, :, 0] = dadx
-    G[:, :, 1] = dady
+    ddx = np.gradient(img, axis = 1)
+    ddy = np.gradient(img, axis = 0)
+    G[:, :, 0] = ddx
+    G[:, :, 1] = ddy
 
     return G
 
