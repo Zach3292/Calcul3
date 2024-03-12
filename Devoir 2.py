@@ -1,19 +1,31 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
+from traitlets import Int
 
 def simpson(f, a, b, n) :
 
     # INSCRIRE DU CODE ICI
-    x = np.linspace(a, b, n+1)
+    x = np.linspace(a, b, 2*n+1)
     y = f(x)
     dx = (b - a) / n
-
-    integrale = np.sum(np.fromiter((
-    y[2*i] + 4*y[2*i+1] + y[2*i+2] for i in range(int(n/2))
-    ), dtype=float)) * dx / 3 # 3 parce que on a n/2 intervalles au lieu de n
-
+    integrale = (dx/6) * np.sum(y[0:-1:2] + 4*y[1::2] + y[2::2])
     return integrale
+
+def derivee(y, x, ordre=1):
+    dydx = np.gradient(y, x)
+
+    if ordre > 1:
+        dydx = derivee(dydx, x, ordre-1)
+    
+    return dydx
+
+def nbIntervallesPourErreurMaximale(f, a, b, erreur_maximale):
+    x = np.linspace(a, b, 1000)
+    y = f(x)
+    val_max_dev_4 = np.max(np.abs(derivee(y, x, 4)))
+    intervalles = (( ((b - a) ** 5) / (180 * erreur_maximale) ) * val_max_dev_4) ** (1/4)
+    return int(intervalles)
 
 # Spécifier la moyenne et l'écart type de la loi normale
 mu = float(input("Moyenne de la loi normale : "))
@@ -23,7 +35,7 @@ sigma = float(input("Écart type de la loi normale : "))
 
 # INSCRIRE DU CODE ICI
 # Vous devez changer la fonction pour celle décrivant une loi normale de moyenne mu et d'écart type sigma
-f = lambda x : norm.pdf(x, loc=mu, scale=sigma) # TODO : voir si c'est la bonne fonction
+f = lambda x : norm.pdf(x, loc=mu, scale=sigma)
 
 # Graphique de la courbe associée à la loi normale
 x = np.linspace(mu-4 * sigma, mu+4 * sigma, 1000)
@@ -46,7 +58,6 @@ erreur_maximale = 0.001
 
 if type_probabilite == 1:
     a = float(input("Valeur du a dans P(X < a) : "))
-    borne_inferieure = -np.inf
 
     # Évaluation de la probabilité
     if a < mu:
@@ -54,25 +65,22 @@ if type_probabilite == 1:
         # Calcul du nombre de sous intervalles nécessaire
 
         # INSCRIRE DU CODE ICI
-        n = (( ((a - borne_inferieure) ** 5) / (180 * erreur_maximale) ) * val_max_dev_4) ** (1/4)
-        # TODO : demander au prof pour la borne inférieure et changer la valeur maximale de la dérivée 4ieme
-
+        n = nbIntervallesPourErreurMaximale(f, a, mu, erreur_maximale)
         # Évaluation de la probabilité
         
         # INSCRIRE DU CODE ICI
-        p = simpson(f, borne_inferieure, a, n)
+        p = 0.5 - simpson(f, a, mu, n)
     else:
         p = 0
         # Calcul du nombre de sous intervalles nécessaire
 
         # INSCRIRE DU CODE ICI
-        n = (( ((a - borne_inferieure) ** 5) / (180 * erreur_maximale) ) * val_max_dev_4) ** (1/4)
-        # TODO : demander au prof pour la borne inférieure et changer la valeur maximale de la dérivée 4ieme
+        n = nbIntervallesPourErreurMaximale(f, mu, a, erreur_maximale)
         
         # Évaluation de la probabilité
         
         # INSCRIRE DU CODE ICI
-        p = simpson(f, borne_inferieure, a, n)
+        p = 0.5 + simpson(f, mu, a, n)
 
     print("La probabilité P(X < %.3f) vaut %.6f" % (a, p))
 
@@ -80,7 +88,7 @@ if type_probabilite == 1:
     x_prob = np.linspace(mu-4 * sigma, a, 100)
     y_prob = f(x_prob)
     plt.vlines(a, ymin=0, ymax=f(a), color='dodgerblue')
-    plt.fill_between(x_prob, y_prob, color='skyblue', label="P(X < %.3f) = %.6f" % (a, p))
+    plt.fill_between(x_prob, y_prob, color='skyblue', label="P(X < %.3f) = %.6f" % (a, p)) # type: ignore
     plt.title("Loi normale de moyenne %.2f et d\'écart type %.2f" % (mu, sigma))
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.075))
 
@@ -96,8 +104,7 @@ elif type_probabilite == 2:
     # Calcul du nombre de sous intervalles nécessaire
 
     # INSCRIRE DU CODE ICI
-    n = (( ((b - a) ** 5) / (180 * erreur_maximale) ) * val_max_dev_4) ** (1/4)
-    # TODO : changer la valeur maximale de la dérivée 4ieme
+    n = nbIntervallesPourErreurMaximale(f, a, b, erreur_maximale)
 
     # Évaluation de la probabilité
     
@@ -110,38 +117,35 @@ elif type_probabilite == 2:
     y_prob = f(x_prob)
     plt.vlines(a, ymin=0, ymax=f(a), color='dodgerblue')
     plt.vlines(b, ymin=0, ymax=f(b), color='dodgerblue')
-    plt.fill_between(x_prob, y_prob, color='skyblue', label="P(%.3f < X < %.3f) = %.6f" % (a, b, p))
+    plt.fill_between(x_prob, y_prob, color='skyblue', label="P(%.3f < X < %.3f) = %.6f" % (a, b, p)) # type: ignore
     plt.title("Loi normale de moyenne %.2f et d\'écart type %.2f" % (mu, sigma))
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.075))
 
 elif type_probabilite == 3:
     a = float(input("Valeur du a dans P(X > a) : "))
-    borne_superieur = np.inf
     # Évaluation de la probabilité
     if a < mu:
         p = 0
         # Calcul du nombre de sous intervalles nécessaire
 
         # INSCRIRE DU CODE ICI
-        n = (( ((borne_superieur - a) ** 5) / (180 * erreur_maximale) ) * val_max_dev_4) ** (1/4)
-        # TODO : demander au prof pour la borne supérieure et changer la valeur maximale de la dérivée 4ieme
+        n = nbIntervallesPourErreurMaximale(f, a, mu, erreur_maximale)
 
         # Évaluation de la probabilité
         
         # INSCRIRE DU CODE ICI
-        p = simpson(f, a, borne_superieur, n)
+        p = 0.5 + simpson(f, a, mu, n)
     else:
         p = 0
         # Calcul du nombre de sous intervalles nécessaire
 
         # INSCRIRE DU CODE ICI
-        n = (( ((borne_superieur - a) ** 5) / (180 * erreur_maximale) ) * val_max_dev_4) ** (1/4)
-        # TODO : demander au prof pour la borne supérieure et changer la valeur maximale de la dérivée 4ieme
+        n = nbIntervallesPourErreurMaximale(f, mu, a, erreur_maximale)
 
         # Évaluation de la probabilité
         
         # INSCRIRE DU CODE ICI
-        p = simpson(f, a, borne_superieur, n)
+        p = 0.5 - simpson(f, mu, a, n)
 
     print("La probabilité P(X > %.3f) vaut %.6f" % (a, p))
 
@@ -149,7 +153,7 @@ elif type_probabilite == 3:
     x_prob = np.linspace(a, mu+4*sigma, 100)
     y_prob = f(x_prob)
     plt.vlines(a, ymin=0, ymax=f(a), color='dodgerblue')
-    plt.fill_between(x_prob, y_prob, color='skyblue', label="P(X > %.3f) = %.6f" % (a, p))
+    plt.fill_between(x_prob, y_prob, color='skyblue', label="P(X > %.3f) = %.6f" % (a, p)) # type: ignore
     plt.title("Loi normale de moyenne %.2f et d\'écart type %.2f" % (mu, sigma))
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.075))
 
