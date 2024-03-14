@@ -17,7 +17,6 @@ def derivee(y, x, ordre=1):
 
     if ordre > 1:
         dydx = derivee(dydx, x, ordre-1)
-    
     return dydx
 
 def nbIntervallesPourErreurMaximale(f, a, b, erreur_maximale):
@@ -25,7 +24,7 @@ def nbIntervallesPourErreurMaximale(f, a, b, erreur_maximale):
     y = f(x)
     val_max_dev_4 = np.max(np.abs(derivee(y, x, 4)))
     intervalles = (( ((b - a) ** 5) / (180 * erreur_maximale) ) * val_max_dev_4) ** (1/4)
-    return int(intervalles)
+    return int(np.ceil(intervalles))
 
 # Spécifier la moyenne et l'écart type de la loi normale
 mu = float(input("Moyenne de la loi normale : "))
