@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
-from traitlets import Int
 
 def simpson(f, a, b, n) :
 
@@ -9,7 +8,7 @@ def simpson(f, a, b, n) :
     x = np.linspace(a, b, 2*n+1)
     y = f(x)
     dx = (b - a) / n
-    integrale = (dx/6) * np.sum(y[0:-1:2] + 4*y[1::2] + y[2::2])
+    integrale = (dx/6) * np.sum(y[:-1:2] + 4*y[1::2] + y[2::2])
     return integrale
 
 def derivee(y, x, ordre=1):
