@@ -29,7 +29,7 @@ yright = xright
 video = skvideo.io.vread("dataset/autopilot/stecatherine.mp4", as_grey=True)
 
 # Traitement de chaque image composant la vidéo
-for it in range(250, 500):
+for it in range(400, 500):
     fr = video[it,:,:,:]
     img = np.array(fr[:,:,0])
     
@@ -106,4 +106,4 @@ for it in range(250, 500):
 
     plt.tight_layout()
     plt.savefig('dataset/autopilot/output/Frame%i.png' % it)
-    
+    plt.close()
