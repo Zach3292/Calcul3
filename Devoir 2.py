@@ -8,9 +8,16 @@ def simpson(f, a, b, n) :
     x = np.linspace(a, b, 2*n+1)
     y = f(x)
     dx = (b - a) / n
-    integrale = (dx/6) * np.sum(y[:-1:2] + 4*y[1::2] + y[2::2])
+
+    integrale = (dx/6) * np.sum(
+        y[:-1:2] + # Sélectionne les éléments d'indice pair sauf le dernier (Point gauche)
+        4*y[1::2] + # Sélectionne les éléments d'indice impair (Point milieu)
+        y[2::2] # Sélectionne les éléments d'indice pair sauf le premier (Point droit)
+            )
+    
     return integrale
 
+# Fonction récursive pour calculer la dérivée d'ordre n
 def derivee(y, x, ordre=1):
     dydx = np.gradient(y, x)
 
@@ -18,6 +25,7 @@ def derivee(y, x, ordre=1):
         dydx = derivee(dydx, x, ordre-1)
     return dydx
 
+# Fonction pour calculer le nombre d'intervalles nécessaires pour une certaine erreur maximale
 def nbIntervallesPourErreurMaximale(f, a, b, erreur_maximale):
     x = np.linspace(a, b, 1000)
     y = f(x)

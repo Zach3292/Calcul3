@@ -9,8 +9,6 @@ np.float = np.float64
 np.int = np.int_
 
 def region(image, polygon):
-    height, width = image.shape
-    
     
     mask = np.zeros_like(image)
     
@@ -58,7 +56,7 @@ for it in range(400, 500):
 
     # Prédiction à gauche (Vous ne devriez pas modifier cette section)
     leftdata = np.fliplr(np.argwhere(Cleft > 0))
-    model_robust, inliers = ski.measure.ransac(leftdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=2000)
+    model_robust, inliers = ski.measure.ransac(leftdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=10000)
     leftpos = model_robust.predict_x([750])
     yleft = model_robust.predict_y(xleft)
     
@@ -68,7 +66,7 @@ for it in range(400, 500):
 
     # Prédiction à droite (Vous ne devriez pas modifier cette section)
     rightdata = np.fliplr(np.argwhere(Cright > 0))
-    model_robust, inliers = ski.measure.ransac(rightdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=2000)
+    model_robust, inliers = ski.measure.ransac(rightdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=10000)
     rightpos = model_robust.predict_x([750])
     yright = model_robust.predict_y(xright)  
 
