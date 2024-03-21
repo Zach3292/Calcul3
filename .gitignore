@@ -1,3 +1,5 @@
 dataset/output/
 dataset/highway/
+dataset/autopilot/output/
 .vscode/
+**/.DS_Store
