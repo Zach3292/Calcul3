@@ -8,15 +8,13 @@ import cv2 as cv
 np.float = np.float64
 np.int = np.int_
 
-def region(image):
+def region(image, polygon):
     height, width = image.shape
-    triangle = np.array([
-                        [(0, 900), (575, 450), (width, 875)]
-                        ])
+    
     
     mask = np.zeros_like(image)
     
-    mask = cv.fillPoly(mask, triangle, 255)
+    mask = cv.fillPoly(mask, polygon, 255)
     mask = cv.bitwise_and(image, mask)
     return mask
 
@@ -40,39 +38,37 @@ for it in range(400, 500):
     gaussian = cv.GaussianBlur(img,(5,5),0)
     
     # Détection des contours avec OpenCV
-    contour = cv.Canny(gaussian, 10, 150, L2gradient=True)
+    contour = cv.Canny(gaussian, 10, 60, L2gradient=True)
     
+    polygon = np.array([
+                        [(150, 750), (500, 520), (660, 500), (1000, 700), (1280, 800)]
+                        ])
     # Application d'un masque pour ne garder que les lignes de la route dans la région voulue
-    C = region(contour)
-
-
-    # Pour débugger, décommentez les lignes suivantes
-
-    # triangle = np.array([
-    #                     [(0, 900), (575, 450), (1280, 875)]
-    #                     ])
-    # B = np.copy(contour)
-    # mask = cv.fillPoly(B, triangle, 255)
+    C = region(contour, polygon)
 
     mask = C
 
-    # Données de gauche
+    # Pour débugger, décommentez les lignes suivantes
+    # B = np.copy(contour)
+    # mask = cv.fillPoly(B, polygon, 255)
+    
+    # Données de gauche (modifiées pour améliorer la performance de l'algorithme)
     Cleft = np.copy(C)
-    Cleft[0:960, 640:1280] = 0
+    Cleft[0:960, 575:1280] = 0
 
     # Prédiction à gauche (Vous ne devriez pas modifier cette section)
     leftdata = np.fliplr(np.argwhere(Cleft > 0))
-    model_robust, inliers = ski.measure.ransac(leftdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=1000)
+    model_robust, inliers = ski.measure.ransac(leftdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=2000)
     leftpos = model_robust.predict_x([750])
     yleft = model_robust.predict_y(xleft)
     
-    # Données de droite
+    # Données de droite (modifiées pour améliorer la performance de l'algorithme)
     Cright = np.copy(C)
-    Cright[0:960, 0:640] = 0
+    Cright[0:960, 0:575] = 0
 
     # Prédiction à droite (Vous ne devriez pas modifier cette section)
     rightdata = np.fliplr(np.argwhere(Cright > 0))
-    model_robust, inliers = ski.measure.ransac(rightdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=1000)
+    model_robust, inliers = ski.measure.ransac(rightdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=2000)
     rightpos = model_robust.predict_x([750])
     yright = model_robust.predict_y(xright)  
 
