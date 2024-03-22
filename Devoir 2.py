@@ -10,9 +10,9 @@ def simpson(f, a, b, n) :
     dx = (b - a) / n
 
     integrale = (dx/6) * np.sum(
-        y[:-1:2] + # Sélectionne les éléments d'indice pair sauf le dernier (Point gauche)
-        4*y[1::2] + # Sélectionne les éléments d'indice impair (Point milieu)
-        y[2::2] # Sélectionne les éléments d'indice pair sauf le premier (Point droit)
+        y[:-1:2] + # Sélectionne les éléments d'indice pair sauf le dernier (Points à gauche de l'intervalle)
+        4*y[1::2] + # Sélectionne les éléments d'indice impair (Points au milieu de l'intervalle)
+        y[2::2] # Sélectionne les éléments d'indice pair sauf le premier (Points à droite de l'intervalle)
             )
     
     return integrale
