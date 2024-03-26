@@ -1,4 +1,3 @@
-from aem import con
 import numpy as np
 import skimage as ski
 import skvideo.io
