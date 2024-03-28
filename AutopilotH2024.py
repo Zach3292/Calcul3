@@ -11,12 +11,18 @@ np.int = np.int_
 
 def gradient_image(img):
     G = np.zeros((img.shape[0], img.shape[1], 2))
-    # TODO voir si je n'utilise pas des Sobel filters à la place pour approximer le gradient avec une convolution
-    # Ajouter du code ici
-    ddx = np.gradient(img, axis = 1)
-    ddy = np.gradient(img, axis = 0)
-    G[:, :, 0] = ddx
-    G[:, :, 1] = ddy
+    
+    # Méthode avec numpy
+    # ddx = np.gradient(img, axis = 1)
+    # ddy = np.gradient(img, axis = 0)
+    # G[:, :, 0] = ddx
+    # G[:, :, 1] = ddy
+
+    # Méthode avec Sobel filters
+    kernel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+    kernel_y = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+    G[:,:,0] = fftconvolve(img, kernel_x, mode='same')
+    G[:,:,1] = fftconvolve(img, kernel_y, mode='same')
 
     N = np.hypot(G[:,:,0], G[:,:,1])
     N = N / N.max() * 255
@@ -29,7 +35,6 @@ def non_maximum_suppression(G, theta):
     angle = theta * 180. / np.pi
     angle[angle < 0] += 180
 
-    # Ajouter du code ici
     for i in range(1, M-1):
         for j in range(1, N-1):
             
@@ -37,27 +42,18 @@ def non_maximum_suppression(G, theta):
             r = 255
 
             # Split en 8 directions
-            # if (0 <= angle[i,j] < 22.5) or (157.5 <= angle[i,j] <= 180):
-            #     q = G[i, j+1]
-            #     r = G[i, j-1]
-            # elif (22.5 <= angle[i,j] < 67.5):
-            #     q = G[i+1, j-1]
-            #     r = G[i-1, j+1]
-            # elif (67.5 <= angle[i,j] < 112.5):
-            #     q = G[i+1, j]
-            #     r = G[i-1, j]
-            # elif (112.5 <= angle[i,j] < 157.5):
-            #     q = G[i-1, j-1]
-            #     r = G[i+1, j+1]
-
-            # Split en 4 directions
-            # Semble mieux marcher pour déterminer les lignes dans ce cas-ci
-            if (0 <= angle[i,j] < 45) or (135 <= angle[i,j] <= 180):
+            if (0 <= angle[i,j] < 22.5) or (157.5 <= angle[i,j] <= 180):
                 q = G[i, j+1]
                 r = G[i, j-1]
-            elif (45 <= angle[i,j] < 135):
+            elif (22.5 <= angle[i,j] < 67.5):
+                q = G[i+1, j-1]
+                r = G[i-1, j+1]
+            elif (67.5 <= angle[i,j] < 112.5):
                 q = G[i+1, j]
                 r = G[i-1, j]
+            elif (112.5 <= angle[i,j] < 157.5):
+                q = G[i-1, j-1]
+                r = G[i+1, j+1]
             
             if (G[i,j] >= q) and (G[i,j] >= r):
                 Z[i,j] = G[i,j]
@@ -136,7 +132,7 @@ for it in range(400, 500):
     gaussian = gaussian_blur(img_crop, 5)
     grad, theta = gradient_image(gaussian)
     max = non_maximum_suppression(grad, theta)
-    contour = hysteresis_double_thresholding(max, 10, 30)
+    contour = hysteresis_double_thresholding(max, 10, 15)
 
     polygon2 = np.array([
                         [(150, 750), (500, 520), (660, 500), (1000, 700), (1280, 800)]
@@ -156,7 +152,7 @@ for it in range(400, 500):
 
     # Prédiction à gauche (Vous ne devriez pas modifier cette section)
     leftdata = np.fliplr(np.argwhere(Cleft > 0))
-    model_robust, inliers = ski.measure.ransac(leftdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=10000)
+    model_robust, inliers = ski.measure.ransac(leftdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=1000)
     leftpos = model_robust.predict_x([750])
     yleft = model_robust.predict_y(xleft)
     
@@ -166,7 +162,7 @@ for it in range(400, 500):
 
     # Prédiction à droite (Vous ne devriez pas modifier cette section)
     rightdata = np.fliplr(np.argwhere(Cright > 0))
-    model_robust, inliers = ski.measure.ransac(rightdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=10000)
+    model_robust, inliers = ski.measure.ransac(rightdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=1000)
     rightpos = model_robust.predict_x([750])
     yright = model_robust.predict_y(xright)  
 
