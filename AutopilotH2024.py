@@ -12,12 +12,6 @@ np.int = np.int_
 def gradient_image(img):
     G = np.zeros((img.shape[0], img.shape[1], 2))
     
-    # Méthode avec numpy
-    # ddx = np.gradient(img, axis = 1)
-    # ddy = np.gradient(img, axis = 0)
-    # G[:, :, 0] = ddx
-    # G[:, :, 1] = ddy
-
     # Méthode avec Sobel filters
     kernel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
     kernel_y = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
@@ -127,12 +121,16 @@ for it in range(400, 500):
     polygon1 = np.array([
                         [(100, 900), (100, 500), (1280, 500), (1280, 900)]
                         ])
-    # Application d'un masque pour ne garder que les lignes de la route dans la région voulue
+    # Application d'un masque pour réduire le temps de compilation
     img_crop = region(img, polygon1)
-    gaussian = gaussian_blur(img_crop, 5)
+    # Application d'un filtre gaussian pour réduire le bruit
+    gaussian = gaussian_blur(img_crop, 10)
+    # Calcul du module du gradient et de sa norme
     grad, theta = gradient_image(gaussian)
+    # Suppression des non-maxima locaux
     max = non_maximum_suppression(grad, theta)
-    contour = hysteresis_double_thresholding(max, 10, 15)
+    # Détection des contours avec un double seuil
+    contour = hysteresis_double_thresholding(max, 9, 15)
 
     polygon2 = np.array([
                         [(150, 750), (500, 520), (660, 500), (1000, 700), (1280, 800)]
@@ -145,6 +143,26 @@ for it in range(400, 500):
     # Pour débugger, décommentez les lignes suivantes
     # B = np.copy(contour)
     # mask = cv.fillPoly(B, polygon2, 255)
+
+    """
+
+    Pourquoi mon code produit-il un meilleur résultat que la référence?
+    
+    1. J'ai utilisé un premier masque pour réduire le temps de compilation
+    2. J'ai utilisé un filtre gaussien pour réduire le bruit au lieu d'un filtre moyenneur ce qui a permis de mieux détecter les lignes
+    3. J'ai implémemté l'agorithme de détection de contour Canny qui implique les étapes suivantes:
+        - Calcul du gradient de l'image
+            - Utilise la convolution avec un filtre Sobel pour calculer le gradient de l'image réduisant le temps de calcul
+        - Suppression des non-maxima locaux
+            - Cette étape permet de réduire le nombre de points de contours en ne gardant que les points de contours les plus forts créant un coutour plus précis
+        - Détection des contours avec un double seuil
+            - Cette étape permet de ne garder que les points de contours les plus forts et d'éliminer les points de contours isolés des autres réduisant ainsi le bruit
+    4. J'ai utilisé un deuxième masque pour ne garder que les lignes de la route dans la région voulue éliminant ainsi les lignes parasites lors du calcul avec l'algorithme RANSAC
+    
+    Le résultat est une détection de lignes plus épurée et plus précise que la référence
+    
+    """
+
     
     # Données de gauche (modifiées pour améliorer la performance de l'algorithme)
     Cleft = np.copy(C)
