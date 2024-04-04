@@ -115,6 +115,8 @@ video = skvideo.io.vread("dataset/autopilot/stecatherine.mp4", as_grey=True)
 for it in range(400, 500):
     fr = video[it,:,:,:]
     img = np.array(fr[:,:,0])
+
+    
     
     # Affichage du numéro l'image traitée
     print(it)
