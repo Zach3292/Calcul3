@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
+import serial
+
+ser = serial.Serial('dev/cu.usbmodem1101', 115200, timeout=1)
 
 # Create figure for plotting
 fig = plt.figure()
@@ -8,17 +11,14 @@ ax = fig.add_subplot(1, 1, 1)
 xs = []
 ys = []
 
-# Initialize communication with TMP102
 
 # This function is called periodically from FuncAnimation
 def animate(i, xs, ys):
-
-    # Read temperature (Celsius) from TMP102
-    temp_c = np.sin(i/3)
+    volts = ser.readline()
 
     # Add x and y to lists
     xs.append(i)
-    ys.append(temp_c)
+    ys.append(volts)
 
     # Limit x and y lists to 20 items
     xs = xs[-20:]
@@ -31,9 +31,10 @@ def animate(i, xs, ys):
     # Format plot
     plt.xticks(rotation=45, ha='right')
     plt.subplots_adjust(bottom=0.30)
-    plt.title('TMP102 Temperature over Time')
-    plt.ylabel('Temperature (deg C)')
+    plt.title('Voltage over Time')
+    plt.ylabel('Voltage')
+
 
 # Set up plot to call animate() function periodically
-ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=1000/60, cache_frame_data=False)
+ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=1000 / 60, cache_frame_data=False)
 plt.show()
