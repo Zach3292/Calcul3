@@ -3,3 +3,11 @@ dataset/highway/
 dataset/autopilot/output/
 .vscode/
 **/.DS_Store
+.idea/Calcul 3.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/other.xml
+.idea/vcs.xml
+.idea/inspectionProfiles/profiles_settings.xml
+dataset/.DS_Store
+.DS_Store
