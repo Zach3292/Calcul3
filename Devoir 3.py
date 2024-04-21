@@ -6,7 +6,7 @@ import pygame
 import sys
 
 # Ouverture du fichier musical pour l'analyse
-fs, data = wavfile.read("dataset/audio/TestGaucheDroite.wav")
+fs, data = wavfile.read("dataset/audio/knights.wav")
 
 # Séparation des canaux gauche-droite
 data_left = data[:, 0] / 2 ** 15
@@ -18,7 +18,7 @@ display = (800, 600)
 surface = pygame.display.set_mode(display)
 
 # Ouverture du fichier musical pour la lecture
-pygame.mixer.music.load("dataset/audio/TestGaucheDroite.wav")
+pygame.mixer.music.load("dataset/audio/knights.wav")
 pygame.mixer.music.play(0)
 pygame.mixer.music.set_volume(0.05)
 play_time = pygame.time.get_ticks()
