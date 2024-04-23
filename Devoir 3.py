@@ -20,10 +20,11 @@ surface = pygame.display.set_mode(display)
 # Ouverture du fichier musical pour la lecture
 pygame.mixer.music.load("dataset/audio/knights.wav")
 pygame.mixer.music.play(0)
-pygame.mixer.music.set_volume(0.05)
+# pygame.mixer.music.set_volume(0.5)
 play_time = pygame.time.get_ticks()
 
-color = (255, 255, 255)  # affichage en blanc
+color_temporelle = (40, 204, 237)
+color_freq = (237, 40, 237)
 
 t = pygame.time.get_ticks()
 getTicksLastFrame = t
@@ -115,7 +116,7 @@ while True:
                   (600, 500)]
 
         # Affichage
-        pygame.draw.polygon(surface, color, points)
+        pygame.draw.polygon(surface, color_temporelle, points)
 
     elif last_key == pygame.K_f:
         # Gestion du temps pour garder l'affichage synchronisé avec la musique
@@ -143,7 +144,7 @@ while True:
 
         # AJOUTER DU CODE ICI
         # chunk_amp est la moyenne des spectres amplitudes de chunk_left_hat et chunk_right_hat
-        chunk_amp = np.mean([chunk_left_hat, chunk_right_hat], axis=0)
+        chunk_amp = np.mean([np.abs(chunk_left_hat), np.abs(chunk_right_hat)], axis=0) # TODO: vérifier si c'est bien l'amplitude
 
         # AJOUTER DU CODE ICI
         # deltaPosition représente l'écart "en position" entre le début et la fin des fréquences
@@ -168,7 +169,7 @@ while True:
         points.append((775, 500))
 
         # Affichage
-        pygame.draw.polygon(surface, color, points)
+        pygame.draw.polygon(surface, color_freq, points)
 
     # Rafraichissement
     pygame.display.flip()
