@@ -1,12 +1,12 @@
 import numpy as np
 from numpy.linalg import norm
 from scipy.io import wavfile
-from scipy.fft import rfft, rfftfreq
+from scipy.fft import rfft
 import pygame
 import sys
 
 # Ouverture du fichier musical pour l'analyse
-fs, data = wavfile.read("dataset/audio/knights.wav")
+fs, data = wavfile.read("dataset/audio/high_hopes.wav")
 
 # Séparation des canaux gauche-droite
 data_left = data[:, 0] / 2 ** 15
@@ -18,7 +18,7 @@ display = (800, 600)
 surface = pygame.display.set_mode(display)
 
 # Ouverture du fichier musical pour la lecture
-pygame.mixer.music.load("dataset/audio/knights.wav")
+pygame.mixer.music.load("dataset/audio/high_hopes.wav")
 pygame.mixer.music.play(0)
 # pygame.mixer.music.set_volume(0.5)
 play_time = pygame.time.get_ticks()
@@ -84,6 +84,7 @@ while True:
         debut = max(0, position - delta_position)
         fin_left = min(data_left.shape[0] - 1, position + delta_position)
         fin_right = min(data_right.shape[0] - 1, position + delta_position)
+
         chunk_left = data_left[debut:fin_left]
         chunk_right = data_right[debut:fin_right]
 
