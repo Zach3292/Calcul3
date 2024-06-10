@@ -2472,3 +2472,905 @@ La fréquence de Nyquist fait office d'axe de réflexion pour toutes les autres 
 ##### Échantillonnage visuel
 Lorsqu'il n'y a pas assez de pixel pour représenter les variations de hautes fréquences.
 
+
+# Devoirs:
+
+### Devoir 1
+
+
+```python
+import numpy as np
+import skimage.io as ski
+import matplotlib.pyplot as plt
+
+def gradient_image(img):
+    G = np.zeros((img.shape[0], img.shape[1], 2))
+
+    # Ajouter du code ici
+    ddx = np.gradient(img, axis = 1)
+    ddy = np.gradient(img, axis = 0)
+    G[:, :, 0] = ddx
+    G[:, :, 1] = ddy
+
+    return G
+
+def norme_gradient(grad):
+    N = np.zeros(grad.shape[0:2])
+
+    # Ajouter du code ici
+    N = np.sqrt(grad[:,:,0]**2 + grad[:,:,1]**2)
+
+    return N
+
+def image_contour(N, s):
+    C = np.zeros_like(N)
+
+    # Ajouter du code ici
+    C = N > s
+
+    return C * 255
+
+def moyenne_image(img, m):
+    Im = np.zeros_like(img)
+
+    # Ajouter du code ici
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            debuti = max(0, i - m)
+            fini = min(img.shape[0]-1, i + m)
+            debutj = max(0, j - m)
+            finj = min(img.shape[1]-1, j + m)
+            Im[i, j] = np.mean(img[debuti:fini+1, debutj:finj+1])
+    
+
+    return Im
+
+def mediane_image(img, m):
+    Im = np.zeros_like(img)
+
+    # Ajouter du code ici
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            debuti = max(0, i - m)
+            fini = min(img.shape[0]-1, i + m)
+            debutj = max(0, j - m)
+            finj = min(img.shape[1]-1, j + m)
+            Im[i, j] = np.median(img[debuti:fini+1, debutj:finj+1])
+
+    return Im
+
+image = ski.imread("dataset/fatbike.png")
+ski.imshow(image)
+ski.show()
+
+# Paramètres
+moyenne_m = 3
+mediane_m = 3
+seuil_s = 15
+
+# Détection de contours sur l'image originale
+
+print("Calcul du gradient...")
+G = gradient_image(image)
+
+ski.imshow(G[:,:,0].astype(np.uint8) + 128, cmap=plt.cm.gray)
+ski.show()
+ski.imshow(G[:,:,1].astype(np.uint8) + 128, cmap=plt.cm.gray)
+ski.show()
+
+print("Calcul de la norme du gradient...")
+N = norme_gradient(G)
+
+ski.imshow((255*N[:,:]/N.max()).astype(np.uint8), cmap=plt.cm.gray)
+ski.show()
+
+print("Application du seuil...")
+C = image_contour(N, seuil_s)
+
+ski.imshow(C.astype(np.uint8), cmap=plt.cm.gray)
+ski.show()
+
+# Détection de contours sur l'image moyenne
+
+print("Calcul de l'image moyenne...")
+image_moy = moyenne_image(image, moyenne_m)
+
+ski.imshow(image_moy.astype(np.uint8), cmap=plt.cm.gray)
+ski.show()
+
+print("Calcul du gradient...")
+G = gradient_image(image_moy)
+
+ski.imshow(G[:,:,0].astype(np.uint8) + 128, cmap=plt.cm.gray)
+ski.show()
+ski.imshow(G[:,:,1].astype(np.uint8) + 128, cmap=plt.cm.gray)
+ski.show()
+
+print("Calcul de la norme du gradient...")
+N = norme_gradient(G)
+
+ski.imshow((255*N[:,:]/N.max()).astype(np.uint8), cmap=plt.cm.gray)
+ski.show()
+
+print("Application du seuil...")
+C = image_contour(N, seuil_s)
+
+ski.imshow(C.astype(np.uint8), cmap=plt.cm.gray)
+ski.show()
+
+# Détection de contours sur l'image médiane
+
+print("Calcul de l'image médiane...")
+image_med = mediane_image(image, mediane_m)
+
+ski.imshow(image_moy.astype(np.uint8), cmap=plt.cm.gray)
+ski.show()
+
+print("Calcul du gradient...")
+G = gradient_image(image_med)
+
+ski.imshow(G[:,:,0].astype(np.uint8) + 128, cmap=plt.cm.gray)
+ski.show()
+ski.imshow(G[:,:,1].astype(np.uint8) + 128, cmap=plt.cm.gray)
+ski.show()
+
+print("Calcul de la norme du gradient...")
+N = norme_gradient(G)
+
+ski.imshow((255*N[:,:]/N.max()).astype(np.uint8), cmap=plt.cm.gray)
+ski.show()
+
+print("Application du seuil...")
+C = image_contour(N, seuil_s)
+
+ski.imshow(C.astype(np.uint8), cmap=plt.cm.gray)
+ski.show()
+```
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_0.png)
+    
+
+
+    Calcul du gradient...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_2.png)
+    
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_3.png)
+    
+
+
+    Calcul de la norme du gradient...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_5.png)
+    
+
+
+    Application du seuil...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_7.png)
+    
+
+
+    Calcul de l'image moyenne...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_9.png)
+    
+
+
+    Calcul du gradient...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_11.png)
+    
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_12.png)
+    
+
+
+    Calcul de la norme du gradient...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_14.png)
+    
+
+
+    Application du seuil...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_16.png)
+    
+
+
+    Calcul de l'image médiane...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_18.png)
+    
+
+
+    Calcul du gradient...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_20.png)
+    
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_21.png)
+    
+
+
+    Calcul de la norme du gradient...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_23.png)
+    
+
+
+    Application du seuil...
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_131_25.png)
+    
+
+
+### Devoir 2
+
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+def simpson(f, a, b, n) :
+
+    # INSCRIRE DU CODE ICI
+    x = np.linspace(a, b, 2*n+1)
+    y = f(x)
+    dx = (b - a) / n
+
+    integrale = (dx/6) * np.sum(
+        y[:-1:2] + # Sélectionne les éléments d'indice pair sauf le dernier (Points à gauche de l'intervalle)
+        4*y[1::2] + # Sélectionne les éléments d'indice impair (Points au milieu de l'intervalle)
+        y[2::2] # Sélectionne les éléments d'indice pair sauf le premier (Points à droite de l'intervalle)
+            )
+    
+    return integrale
+
+# Fonction récursive pour calculer la dérivée d'ordre n
+def derivee(y, x, ordre=1):
+    dydx = np.gradient(y, x)
+
+    if ordre > 1:
+        dydx = derivee(dydx, x, ordre-1)
+    return dydx
+
+# Fonction pour calculer le nombre d'intervalles nécessaires pour une certaine erreur maximale
+def nbIntervallesPourErreurMaximale(f, a, b, erreur_maximale):
+    x = np.linspace(a, b, 1000)
+    y = f(x)
+    val_max_dev_4 = np.max(np.abs(derivee(y, x, 4)))
+    intervalles = (( ((b - a) ** 5) / (180 * erreur_maximale) ) * val_max_dev_4) ** (1/4)
+    return int(np.ceil(intervalles))
+
+# Spécifier la moyenne et l'écart type de la loi normale
+mu = float(input("Moyenne de la loi normale : "))
+sigma = float(input("Écart type de la loi normale : "))
+
+# Définition de la fonction normale à partir de mu et sigma
+
+# INSCRIRE DU CODE ICI
+# Vous devez changer la fonction pour celle décrivant une loi normale de moyenne mu et d'écart type sigma
+f = lambda x : norm.pdf(x, loc=mu, scale=sigma)
+
+# Graphique de la courbe associée à la loi normale
+x = np.linspace(mu-4 * sigma, mu+4 * sigma, 1000)
+y = f(x)
+ax = plt.subplot(111)
+ax.plot(x, y, label="N(%.2f, %.2f)" % (mu, sigma**2), color='dodgerblue')
+box = ax.get_position()
+ax.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
+
+# Spécifier le type de probabilité à évaluer
+print("Quel type de probabilité voulez-vous évaluer ?")
+print("\t \t 1. P(X < a)")
+print("\t \t 2. P(a < X < b)")
+print("\t \t 3. P(X > a)")
+type_probabilite = int(input("Type de probabilité : "))
+while type_probabilite not in {1, 2, 3}:
+    type_probabilite = int(input("Choisir le type 1, 2 ou 3 : "))
+
+erreur_maximale = 0.001
+
+if type_probabilite == 1:
+    a = float(input("Valeur du a dans P(X < a) : "))
+
+    # Évaluation de la probabilité
+    if a < mu:
+        p = 0
+        # Calcul du nombre de sous intervalles nécessaire
+
+        # INSCRIRE DU CODE ICI
+        n = nbIntervallesPourErreurMaximale(f, a, mu, erreur_maximale)
+        # Évaluation de la probabilité
+        
+        # INSCRIRE DU CODE ICI
+        p = 0.5 - simpson(f, a, mu, n)
+    else:
+        p = 0
+        # Calcul du nombre de sous intervalles nécessaire
+
+        # INSCRIRE DU CODE ICI
+        n = nbIntervallesPourErreurMaximale(f, mu, a, erreur_maximale)
+        
+        # Évaluation de la probabilité
+        
+        # INSCRIRE DU CODE ICI
+        p = 0.5 + simpson(f, mu, a, n)
+
+    print("La probabilité P(X < %.3f) vaut %.6f" % (a, p))
+
+    # Tracer la région associée à la probabilité
+    x_prob = np.linspace(mu-4 * sigma, a, 100)
+    y_prob = f(x_prob)
+    plt.vlines(a, ymin=0, ymax=f(a), color='dodgerblue')
+    plt.fill_between(x_prob, y_prob, color='skyblue', label="P(X < %.3f) = %.6f" % (a, p)) # type: ignore
+    plt.title("Loi normale de moyenne %.2f et d\'écart type %.2f" % (mu, sigma))
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.075))
+
+elif type_probabilite == 2:
+    a = float(input("Valeur du a dans P(a < X < b) : "))
+    b = float(input("Valeur du b dans P(a < X < b) : "))
+    while b < a:
+        print("Il faut que a soit inférieur à b.")
+        a = float(input("Valeur du a dans P(a < X < b) : "))
+        b = float(input("Valeur du b dans P(a < X < b) : "))
+
+    p = 0
+    # Calcul du nombre de sous intervalles nécessaire
+
+    # INSCRIRE DU CODE ICI
+    n = nbIntervallesPourErreurMaximale(f, a, b, erreur_maximale)
+
+    # Évaluation de la probabilité
+    
+    # INSCRIRE DU CODE ICI
+    p = simpson(f, a, b, n)
+    print("La probabilité P(%.3f < X < %.3f) vaut %.6f" % (a, b, p))
+
+    # Tracer la région associée à la probabilité
+    x_prob = np.linspace(a, b, 100)
+    y_prob = f(x_prob)
+    plt.vlines(a, ymin=0, ymax=f(a), color='dodgerblue')
+    plt.vlines(b, ymin=0, ymax=f(b), color='dodgerblue')
+    plt.fill_between(x_prob, y_prob, color='skyblue', label="P(%.3f < X < %.3f) = %.6f" % (a, b, p)) # type: ignore
+    plt.title("Loi normale de moyenne %.2f et d\'écart type %.2f" % (mu, sigma))
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.075))
+
+elif type_probabilite == 3:
+    a = float(input("Valeur du a dans P(X > a) : "))
+    # Évaluation de la probabilité
+    if a < mu:
+        p = 0
+        # Calcul du nombre de sous intervalles nécessaire
+
+        # INSCRIRE DU CODE ICI
+        n = nbIntervallesPourErreurMaximale(f, a, mu, erreur_maximale)
+
+        # Évaluation de la probabilité
+        
+        # INSCRIRE DU CODE ICI
+        p = 0.5 + simpson(f, a, mu, n)
+    else:
+        p = 0
+        # Calcul du nombre de sous intervalles nécessaire
+
+        # INSCRIRE DU CODE ICI
+        n = nbIntervallesPourErreurMaximale(f, mu, a, erreur_maximale)
+
+        # Évaluation de la probabilité
+        
+        # INSCRIRE DU CODE ICI
+        p = 0.5 - simpson(f, mu, a, n)
+
+    print("La probabilité P(X > %.3f) vaut %.6f" % (a, p))
+
+    # Tracer la région associée à la probabilité
+    x_prob = np.linspace(a, mu+4*sigma, 100)
+    y_prob = f(x_prob)
+    plt.vlines(a, ymin=0, ymax=f(a), color='dodgerblue')
+    plt.fill_between(x_prob, y_prob, color='skyblue', label="P(X > %.3f) = %.6f" % (a, p)) # type: ignore
+    plt.title("Loi normale de moyenne %.2f et d\'écart type %.2f" % (mu, sigma))
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.075))
+
+plt.show()
+
+```
+
+    Quel type de probabilité voulez-vous évaluer ?
+    	 	 1. P(X < a)
+    	 	 2. P(a < X < b)
+    	 	 3. P(X > a)
+    La probabilité P(-0.500 < X < 0.500) vaut 0.382925
+
+
+
+    
+![png](Note%20de%20cours_files/Note%20de%20cours_133_1.png)
+    
+
+
+### Devoir 3
+
+
+```python
+import numpy as np
+from numpy.linalg import norm
+from scipy.io import wavfile
+from scipy.fft import rfft
+import pygame
+import sys
+
+# Ouverture du fichier musical pour l'analyse
+fs, data = wavfile.read("dataset/audio/sweep3.wav")
+
+# Séparation des canaux gauche-droite
+data_left = data[:, 0] / 2 ** 15
+data_right = data[:, 1] / 2 ** 15
+
+# Initialisation de la fenêtre graphique
+pygame.init()
+display = (800, 600)
+surface = pygame.display.set_mode(display)
+
+# Ouverture du fichier musical pour la lecture
+pygame.mixer.music.load("dataset/audio/sweep3.wav")
+pygame.mixer.music.play(0)
+# pygame.mixer.music.set_volume(0.5)
+play_time = pygame.time.get_ticks()
+
+color_temporelle = (40, 204, 237)
+color_freq = (237, 40, 237)
+
+t = pygame.time.get_ticks()
+getTicksLastFrame = t
+
+# Paramètres pour la visualisation temporelle
+current_height_left = 0
+current_height_right = 0
+
+# Paramètres pour la visualisation fréquentielle
+nb_columns = 30
+deltaFreq = int(6000 / nb_columns)
+bars_top = np.zeros((nb_columns, 1))
+bars_top_old = bars_top
+
+# Dernière touche appuyée sur le clavier (t = analyse temporelle, f = analyse fréquentielle, q = quitter)
+last_key = pygame.K_t
+
+# Boucle principale
+while True:
+    # Interaction avec le clavier
+    events = pygame.event.get()
+    for event in events:
+        if event.type == pygame.QUIT:
+            pygame.display.quit()
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                pygame.display.quit()
+                pygame.quit()
+                sys.exit()
+            elif event.key == pygame.K_t:
+                print("Analyse temporelle")
+                last_key = pygame.K_t
+            elif event.key == pygame.K_f:
+                print("Analyse fréquentielle")
+                last_key = pygame.K_f
+
+    # Fond noir
+    surface.fill((0, 0, 0))
+
+    # Dernière touche = t -> Analyse temporelle
+    if last_key == pygame.K_t:
+        # Gestion du temps pour garder l'affichage synchronisé avec la musique
+        # "t" est le temps actuel
+        t = pygame.time.get_ticks() - play_time
+        deltaTime = (t - getTicksLastFrame) / 1000.0
+        getTicksLastFrame = t
+
+        # AJOUTER DU CODE ICI
+        # chunk_left et chunk_right sont des tableaux contenant les données temporelles à analyser
+        # l'intervalle d'analyse contient les valeurs entre t - 0,01s et t + 0,01s
+
+        position = int(t * fs / 1000)
+        delta_position = int(0.01 * fs)
+
+        debut = max(0, position - delta_position)
+        fin_left = min(data_left.shape[0] - 1, position + delta_position)
+        fin_right = min(data_right.shape[0] - 1, position + delta_position)
+
+        chunk_left = data_left[debut:fin_left]
+        chunk_right = data_right[debut:fin_right]
+
+        # AJOUTER DU CODE ICI
+        # norm_left et norm_right correspondent à la racine carrée de la somme des carrés des éléments
+        # de chunk_left et chunk_right, respectivement
+        norm_left = norm(chunk_left)
+        norm_right = norm(chunk_right)
+
+        # Gauche
+        desired_height_left = 30 * norm_left
+        speed = (desired_height_left - current_height_left) / 0.1
+        new_height_left = current_height_left + speed * deltaTime
+        current_height_left = new_height_left
+
+        # Droit
+        desired_height_right = 30 * norm_right
+        speed = (desired_height_right - current_height_right) / 0.1
+        new_height_right = current_height_right + speed * deltaTime
+        current_height_right = new_height_right
+
+        # Construction des colonnes
+        points = [(200, 500),
+                  (200, 500-new_height_left),
+                  (300, 500-new_height_left),
+                  (300, 500),
+                  (500, 500),
+                  (500, 500-new_height_right),
+                  (600, 500-new_height_right),
+                  (600, 500)]
+
+        # Affichage
+        pygame.draw.polygon(surface, color_temporelle, points)
+
+    elif last_key == pygame.K_f:
+        # Gestion du temps pour garder l'affichage synchronisé avec la musique
+        # "t" est le temps actuel
+        t = pygame.time.get_ticks() - play_time
+        deltaTime = (t - getTicksLastFrame) / 1000.0
+        getTicksLastFrame = t
+
+        # AJOUTER DU CODE ICI
+        # chunk_left et chunk_right sont des tableaux contenant les données temporelles à analyser
+        # l'intervalle d'analyse contient les valeurs entre t - 0,25s et t + 0,25s
+        position = int(t * fs / 1000)
+        delta_position = int(0.25 * fs)
+
+        debut = max(0, position - delta_position)
+        fin_left = min(data_left.shape[0] - 1, position + delta_position)
+        fin_right = min(data_right.shape[0] - 1, position + delta_position)
+        chunk_left = data_left[debut:fin_left]
+        chunk_right = data_right[debut:fin_right]
+
+        # AJOUTER DU CODE ICI
+        # chunk_left_hat et chunk_right_hat sont les transformées de Fourier de chunk_left et chunk_right, resp.
+        chunk_left_hat = rfft(chunk_left)
+        chunk_right_hat = rfft(chunk_right)
+
+        # AJOUTER DU CODE ICI
+        # chunk_amp est la moyenne des spectres amplitudes de chunk_left_hat et chunk_right_hat
+        chunk_amp = np.mean([np.abs(chunk_left_hat), np.abs(chunk_right_hat)], axis=0) # TODO: vérifier si c'est bien l'amplitude
+
+        # AJOUTER DU CODE ICI
+        # deltaPosition représente l'écart "en position" entre le début et la fin des fréquences
+        # associées à une colonne en fonction de l'écart "en fréquence" deltaFreq
+        deltaPosition = int(deltaFreq * (1/fs) * chunk_amp.shape[0])
+
+        # Construction des colonnes
+        points = [(25, 500)]
+        for i in range(nb_columns):
+            # AJOUTER DU CODE ICI
+            # amp représente la moyenne des amplitudes des fréquences associées à la i-ième colonne
+            amp = np.mean(chunk_amp[i*deltaPosition:(i+1)*deltaPosition])
+
+            # Conversion des amplitudes en décibels
+            amp_db = np.clip(20 * np.log10(amp / 32768), -80, 0) + 80
+            current_height = bars_top_old[i]
+            desired_height = 5 * amp_db
+            speed = (desired_height - current_height) / 0.04
+            bars_top[i] = current_height + speed * deltaTime
+            points.append((25 + i * 25, 500 - bars_top[i, 0]))
+            points.append((25 + (i + 1) * 25, 500 - bars_top[i, 0]))
+        points.append((775, 500))
+
+        # Affichage
+        pygame.draw.polygon(surface, color_freq, points)
+
+    # Rafraichissement
+    pygame.display.flip()
+
+```
+
+    pygame 2.5.2 (SDL 2.28.3, Python 3.11.5)
+    Hello from the pygame community. https://www.pygame.org/contribute.html
+
+
+
+    An exception has occurred, use %tb to see the full traceback.
+
+
+    SystemExit
+
+
+
+    /Users/zacharieroy/anaconda3/lib/python3.11/site-packages/IPython/core/interactiveshell.py:3534: UserWarning: To exit: use 'exit', 'quit', or Ctrl-D.
+      warn("To exit: use 'exit', 'quit', or Ctrl-D.", stacklevel=1)
+
+
+### Autopilot
+
+
+```python
+import numpy as np
+import skimage as ski
+import skvideo.io
+import matplotlib.pyplot as plt
+import cv2 as cv
+from scipy.stats import norm
+from scipy.signal import fftconvolve
+
+np.float = np.float64
+np.int = np.int_
+
+def gradient_image(img):
+    G = np.zeros((img.shape[0], img.shape[1], 2))
+    
+    # Méthode avec Sobel filters
+    kernel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+    kernel_y = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+    G[:,:,0] = fftconvolve(img, kernel_x, mode='same')
+    G[:,:,1] = fftconvolve(img, kernel_y, mode='same')
+
+    N = np.hypot(G[:,:,0], G[:,:,1])
+    N = N / N.max() * 255
+    theta = np.arctan2(G[:,:,1], G[:,:,0])
+    return N, theta
+
+def non_maximum_suppression(G, theta):
+    M, N = G.shape
+    Z = np.zeros((M,N), dtype=np.int32)
+    angle = theta * 180. / np.pi
+    angle[angle < 0] += 180
+
+    for i in range(1, M-1):
+        for j in range(1, N-1):
+            
+            q = 255
+            r = 255
+
+            # Split en 8 directions
+            if (0 <= angle[i,j] < 22.5) or (157.5 <= angle[i,j] <= 180):
+                q = G[i, j+1]
+                r = G[i, j-1]
+            elif (22.5 <= angle[i,j] < 67.5):
+                q = G[i+1, j-1]
+                r = G[i-1, j+1]
+            elif (67.5 <= angle[i,j] < 112.5):
+                q = G[i+1, j]
+                r = G[i-1, j]
+            elif (112.5 <= angle[i,j] < 157.5):
+                q = G[i-1, j-1]
+                r = G[i+1, j+1]
+            
+            if (G[i,j] >= q) and (G[i,j] >= r):
+                Z[i,j] = G[i,j]
+            else:
+                Z[i,j] = 0
+    return Z
+
+def hysteresis_double_thresholding(img, T1, T2):
+    M, N = img.shape
+    resulant = np.zeros((M,N), dtype=np.int32)
+
+    fort = np.int32(255)
+    faible = np.int32(25)
+
+    fort_i, fort_j = np.where(img >= T2)
+    faible_i, faible_j = np.where((img <= T2) & (img >= T1))
+
+    resulant[fort_i, fort_j] = fort
+    resulant[faible_i, faible_j] = faible
+
+    for i in range(1, M-1):
+        for j in range(1, N-1):
+            if resulant[i,j] == faible:
+                if ((resulant[i+1, j-1] == fort) or (resulant[i+1, j] == fort) or (resulant[i+1, j+1] == fort)
+                    or (resulant[i, j-1] == fort) or (resulant[i, j+1] == fort)
+                    or (resulant[i-1, j-1] == fort) or (resulant[i-1, j] == fort) or (resulant[i-1, j+1] == fort)
+                    ):
+                    resulant[i, j] = fort
+                else:
+                    resulant[i, j] = 0
+
+    return resulant
+
+def gaussian_kernel(size, sigma=1):
+    kernel_1D = np.linspace(-(size // 2), size // 2, size)
+    for i in range(size):
+        kernel_1D[i] = norm.pdf(kernel_1D[i], loc=0, scale=sigma)
+    kernel_2D = np.outer(kernel_1D.T, kernel_1D.T)
+ 
+    kernel_2D *= 1.0 / kernel_2D.max()
+
+    return kernel_2D
+
+def gaussian_blur(image, kernel_size):
+    kernel = gaussian_kernel(kernel_size, sigma=np.sqrt(kernel_size))
+    return fftconvolve(image, kernel, mode='same')
+
+def region(image, polygon):
+
+    mask = np.zeros_like(image)
+
+    mask = cv.fillPoly(mask, polygon, 255)
+    mask = cv.bitwise_and(image, mask)
+    return mask
+
+xleft = np.linspace(300, 600, 1000)
+yleft = xleft
+xright = np.linspace(680, 980, 1000)
+yright = xright
+
+# Chargement de la vidéo en mémoire
+video = skvideo.io.vread("dataset/autopilot/stecatherine.mp4", as_grey=True)
+
+# Traitement de chaque image composant la vidéo
+for it in range(400, 500):
+    fr = video[it,:,:,:]
+    img = np.array(fr[:,:,0])
+
+    
+    
+    # Affichage du numéro l'image traitée
+    print(it)
+    polygon1 = np.array([
+                        [(100, 900), (100, 500), (1280, 500), (1280, 900)]
+                        ])
+    # Application d'un masque pour réduire le temps de compilation
+    img_crop = region(img, polygon1)
+    # Application d'un filtre gaussian pour réduire le bruit
+    gaussian = gaussian_blur(img_crop, 10)
+    # Calcul du module du gradient et de sa norme
+    grad, theta = gradient_image(gaussian)
+    # Suppression des non-maxima locaux
+    max = non_maximum_suppression(grad, theta)
+    # Détection des contours avec un double seuil
+    contour = hysteresis_double_thresholding(max, 9, 15)
+
+    polygon2 = np.array([
+                        [(150, 750), (500, 520), (660, 500), (1000, 700), (1280, 800)]
+                        ])
+    # Application d'un masque pour ne garder que les lignes de la route dans la région voulue
+    C = region(contour, polygon2)
+
+    mask = C
+
+    # Pour débugger, décommentez les lignes suivantes
+    # B = np.copy(contour)
+    # mask = cv.fillPoly(B, polygon2, 255)
+
+    """
+
+    Pourquoi mon code produit-il un meilleur résultat que la référence?
+    
+    1. J'ai utilisé un premier masque pour réduire le temps de compilation
+    2. J'ai utilisé un filtre gaussien pour réduire le bruit au lieu d'un filtre moyenneur ce qui a permis de mieux détecter les lignes
+    3. J'ai implémemté l'agorithme de détection de contour Canny qui implique les étapes suivantes:
+        - Calcul du gradient de l'image
+            - Utilise la convolution avec un filtre Sobel pour calculer le gradient de l'image réduisant le temps de calcul
+        - Suppression des non-maxima locaux
+            - Cette étape permet de réduire le nombre de points de contours en ne gardant que les points de contours les plus forts créant un coutour plus précis
+        - Détection des contours avec un double seuil
+            - Cette étape permet de ne garder que les points de contours les plus forts et d'éliminer les points de contours isolés des autres réduisant ainsi le bruit
+    4. J'ai utilisé un deuxième masque pour ne garder que les lignes de la route dans la région voulue éliminant ainsi les lignes parasites lors du calcul avec l'algorithme RANSAC
+    
+    Le résultat est une détection de lignes plus épurée et plus précise que la référence
+    
+    """
+
+    
+    # Données de gauche (modifiées pour améliorer la performance de l'algorithme)
+    Cleft = np.copy(C)
+    Cleft[0:960, 575:1280] = 0
+
+    # Prédiction à gauche (Vous ne devriez pas modifier cette section)
+    leftdata = np.fliplr(np.argwhere(Cleft > 0))
+    model_robust, inliers = ski.measure.ransac(leftdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=1000)
+    leftpos = model_robust.predict_x([750])
+    yleft = model_robust.predict_y(xleft)
+    
+    # Données de droite (modifiées pour améliorer la performance de l'algorithme)
+    Cright = np.copy(C)
+    Cright[0:960, 0:575] = 0
+
+    # Prédiction à droite (Vous ne devriez pas modifier cette section)
+    rightdata = np.fliplr(np.argwhere(Cright > 0))
+    model_robust, inliers = ski.measure.ransac(rightdata, ski.measure.LineModelND, min_samples=50, residual_threshold=2, max_trials=1000)
+    rightpos = model_robust.predict_x([750])
+    yright = model_robust.predict_y(xright)  
+
+    # Affichage (Vous ne devriez pas modifier cette section)
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5), sharex=True, sharey=True)
+    ax = axes.ravel()
+
+    ax[0].imshow(img, cmap="gray")
+    ax[0].set_title('Image')
+
+    ax[1].imshow(mask, cmap="gray")
+    ax[1].set_title('Lignes')
+
+    ax[2].imshow(C * 0)
+    ax[2].scatter(leftdata[:,0], leftdata[:,1], s=1, c='b')
+    ax[2].scatter(rightdata[:,0], rightdata[:,1], s=1, c='g')
+    
+    ax[2].plot(xleft, yleft, c='r')
+    ax[2].plot(xright, yright, c='r')
+
+    ax[2].plot(np.mean([leftpos, rightpos]), 750, 'co')
+    ax[2].plot(rightpos, 750, 'yo')
+    ax[2].plot(leftpos, 750, 'yo')
+
+    ax[2].set_xlim((0, img.shape[1]))
+    ax[2].set_ylim((img.shape[0], 0))
+    ax[2].set_title('Autopilot')
+
+    for a in ax:
+        a.set_axis_off()
+
+    plt.tight_layout()
+    plt.savefig('dataset/autopilot/output/Frame%i.png' % it)
+    plt.close()
+```
+
+#### Code pour générer vidéo
+
+```bash
+#!/bin/bash
+
+ffmpeg -framerate 25 -pattern_type glob -i '*.png' \
+  -c:v libx264 -pix_fmt yuv420p out.mp4 -y
+
+ffmpeg -framerate 25 -pattern_type glob -i 'Reference/*.png' \
+  -c:v libx264 -pix_fmt yuv420p Reference/out.mp4 -y
+
+ffmpeg -i out.mp4 -i Reference/out.mp4 -filter_complex vstack output.mp4 -y
+
+```
